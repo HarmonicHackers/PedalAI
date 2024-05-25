@@ -135,7 +135,7 @@ function App() {
   }, []);
 
   async function uploadFile(file: File) {
-    var data = new FormData();
+    const data = new FormData();
     data.append("file", file);
     const res = await fetch(`/api/${sessionId}/upload`, {
       method: "POST",
@@ -149,13 +149,7 @@ function App() {
   }
 
   async function reloadAudioFile() {
-    const resFile = await fetch("/api/download", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
+    const resFile = await fetch(`/api/${sessionId}/download`);
     const uploadedfile = await resFile.blob();
     setBlob(uploadedfile);
   }
@@ -190,6 +184,7 @@ function App() {
         <div>
           <Chat reloadAudioFile={reloadAudioFile} />
         </div>
+        div
       </div>
     </div>
   );
