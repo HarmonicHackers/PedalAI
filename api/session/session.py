@@ -16,7 +16,7 @@ DEFAULT_NUM_CHANNELS = 2
 
 class Session:
     def __init__(self, path: str = "./pedalAi/sessions", **kwargs) -> None:
-        self.plugins: List[Plugin] = []
+        self.plugins: List[any] = []
         self.id = kwargs.get("session_id")
         if self.id is None:
             self.id = "session_{}".format(str(uuid.uuid4()))

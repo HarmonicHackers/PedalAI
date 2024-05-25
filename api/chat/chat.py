@@ -1,5 +1,5 @@
 from typing import Any, List, Tuple
-from agents import get_pedal_effects_from_text
+from agents import get_pedal_effects_from_text, get_plugins_from_tool_calls
 from session import Session
 from session import Track
 from fastapi import File, Request, UploadFile, APIRouter
@@ -20,12 +20,15 @@ def dummy_chain(
     print(messages)
     text = messages[-1]["content"]
     print(text)
-    list_of_effects, chat_message = get_pedal_effects_from_text(text)
-    print(list_of_effects)
-    pedal = Pedalboard(list_of_effects)
-
     session = Session.load(session_id)
-    session.plugins.extend(list_of_effects)
+    chat_message, function_calls = get_pedal_effects_from_text(text)
+    session.plugins.extend(function_calls)
+
+    plugins_from_tool_calls = get_plugins_from_tool_calls(session.plugins)
+    print(plugins_from_tool_calls)
+
+    pedal = Pedalboard(plugins_from_tool_calls)
+
     track_filepath = session.original.path
     print(track_filepath)
 

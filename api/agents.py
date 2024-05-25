@@ -1,6 +1,17 @@
 from mistralai.client import MistralClient
 from mistralai.models.chat_completion import ChatMessage
 import os
+import functools, json
+from pedalboard import (
+    Reverb,
+    Gain,
+    Bitcrush,
+    Chorus,
+    Clipping,
+    Compressor,
+    Delay,
+    Distortion,
+)
 
 # Model & API key environment variable
 model = "mistral-large-latest"
@@ -227,30 +238,8 @@ audio_effects_jsons = [
 ]
 
 
-def get_pedal_effects_from_text(text):
+def get_plugins_from_tool_calls(tool_calls):
     import functools, json
-    from pedalboard import (
-        Reverb,
-        Gain,
-        Bitcrush,
-        Chorus,
-        Clipping,
-        Compressor,
-        Delay,
-        Distortion,
-    )
-
-    # Define the default chat messages
-    default_messages = [
-        ChatMessage(  # System message (AI assistant introduction)
-            role="system",
-            content="You are a helpful music assistant with access to a music track. You must use function calling to apply effects to the latter track!",
-        ),
-        ChatMessage(  # User input
-            role="user",
-            content=text,
-        ),
-    ]
 
     # Initialize the list that will store the suggested effects
     suggested_effects_list = []
@@ -271,6 +260,32 @@ def get_pedal_effects_from_text(text):
         "distortion_effect": functools.partial(wrapper, Distortion),
     }
 
+    # Iterate over the tool calls and apply the effects
+    for tool_call in tool_calls:
+        func_name = tool_call.function.name
+        func_params = json.loads(tool_call.function.arguments)
+
+        # Call the function with the parameters using the map & wrapper
+        func_result = functions_effects_map[func_name](**func_params)
+        # print(func_result)
+
+    return suggested_effects_list
+
+
+def get_pedal_effects_from_text(text):
+
+    # Define the default chat messages
+    default_messages = [
+        ChatMessage(  # System message (AI assistant introduction)
+            role="system",
+            content="You are a helpful music assistant with access to a music track. You must use function calling to apply effects to the latter track!",
+        ),
+        ChatMessage(  # User input
+            role="user",
+            content=text,
+        ),
+    ]
+
     # Create the Mistral client and send the default chat messages
     client = MistralClient(api_key=api_key)
     response = client.chat(
@@ -280,17 +295,6 @@ def get_pedal_effects_from_text(text):
         tool_choice="any",  # Make model sends at least one tool call
         temperature=0.1,  # Creativity level
     )
-
-    # print(response.choices[0].message.content) # User input
-
-    # Iterate over the tool calls and apply the effects
-    for tool_call in response.choices[0].message.tool_calls:
-        func_name = tool_call.function.name
-        func_params = json.loads(tool_call.function.arguments)
-
-        # Call the function with the parameters using the map & wrapper
-        func_result = functions_effects_map[func_name](**func_params)
-        # print(func_result)
 
     def get_describing_text(effects):
         describing_text = (
@@ -317,6 +321,8 @@ def get_pedal_effects_from_text(text):
         describing_text = reponse.choices[0].message.content
 
         return describing_text
+
+    function_calls = response.choices[0].message.tool_calls
 
     describing_text = get_describing_text(
         response.choices[0].message.tool_calls
@@ -353,4 +359,4 @@ def get_pedal_effects_from_text(text):
     )
 
     # Return the suggested effects list (list of effect objects to apply to the audio track later on)
-    return suggested_effects_list, describing_text
+    return describing_text, function_calls
