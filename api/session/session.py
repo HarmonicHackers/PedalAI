@@ -3,6 +3,7 @@ from __future__ import annotations
 import os
 from typing import List
 import uuid
+from pydantic import BaseModel
 
 from session.track import Track
 from pedalboard import Plugin
@@ -15,9 +16,15 @@ DEAFAULT_SAMPLE_RATE = 44100
 DEFAULT_NUM_CHANNELS = 2
 
 
+class PluginsData(BaseModel):
+    start: float
+    end: float
+    plugins: List[ToolCall]
+
+
 class Session:
     def __init__(self, path: str = "./pedalAi/sessions", **kwargs) -> None:
-        self.plugins: List[ToolCall] = []
+        self.plugins: List[PluginsData] = []
         self.id = kwargs.get("session_id")
         if self.id is None:
             self.id = "session_{}".format(str(uuid.uuid4()))

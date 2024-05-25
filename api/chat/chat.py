@@ -29,22 +29,27 @@ def replace_audio_part(
     return samples
 
 
-def dummy_chain(
-    messages: List[dict], session_id: str, start: float, end: float
-) -> Tuple[List[Any], str]:
-    print(messages)
-    text = messages[-1]["content"]
-    print(text)
-    session = Session.load(session_id)
-    chat_message, function_calls = get_pedal_effects_from_text(text)
-    session.plugins.extend(function_calls)
+from mistralai.models.chat_completion import ToolCall
 
-    plugins_from_tool_calls = get_plugins_from_tool_calls(session.plugins)
+
+def apply_plugins(
+    start: float,
+    end: float,
+    plugins: List[ToolCall],
+    session: Session,
+    session_id: str,
+    is_consecutive=False,
+):
+    plugins_from_tool_calls = get_plugins_from_tool_calls(plugins)
     print(plugins_from_tool_calls)
 
     pedal = Pedalboard(plugins_from_tool_calls)
 
-    track_filepath = session.original.path
+    track_filepath = (
+        session.original.path
+        if not is_consecutive
+        else session.last_modified.path
+    )
     print(track_filepath)
 
     samplerate = 44100
@@ -74,6 +79,32 @@ def dummy_chain(
 
     session.last_modified = new_track
     session.save()
+
+
+def dummy_chain(
+    messages: List[dict], session_id: str, start: float, end: float
+) -> Tuple[List[Any], str]:
+    print(messages)
+    text = messages[-1]["content"]
+    print(text)
+    session = Session.load(session_id)
+    chat_message, function_calls = get_pedal_effects_from_text(text)
+
+    session.plugins.extend(
+        [{"start": start, "end": end, "plugins": function_calls}]
+    )
+
+    print("session.plugins", session.plugins)
+    for i, plugin in enumerate(session.plugins):
+        print(plugin)
+        apply_plugins(
+            plugin["start"],
+            plugin["end"],
+            plugin["plugins"],
+            session,
+            session_id,
+            is_consecutive=i != 0,
+        )
 
     return {"role": "assistant", "content": chat_message}
 

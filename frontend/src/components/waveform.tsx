@@ -68,11 +68,11 @@ const Waveform = ({
           style={{
             left: value[0] + "%",
             width: value[1] - value[0] + "%",
-            height: "100%",
+            height: "100px",
           }}
           className="bg-red-500 opacity-50 absolute top-0 bottom-0 bg-blend-lighten"
         ></div>
-        <div className="absolute opacity-50 top-1/2 left-0 right-0 z-50 w-full h-full">
+        <div className="absolute opacity-50 top-1/2 left-0 right-0 z-50 w-full bottom-0">
           <pre>{JSON.stringify(value, null, 2)}</pre>
           <RangeSlider value={value} onInput={setValue} />
         </div>
