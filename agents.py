@@ -6,7 +6,7 @@ from langchain import hub
 from langchain_mistralai import ChatMistralAI
 
 from pedalboard import Pedalboard
-from pedalboard import Reverb, Gain
+from pedalboard import Reverb, Gain, Bitcrush
 
 import os
 
@@ -25,21 +25,21 @@ def call_music_agent(text: str):
 
     @tool
     def reverb(
-        room_size: float = 0.5,
-        damping: float = 0.5,
-        wet_level: float = 0.33,
-        dry_level: float = 0.4,
-        width: float = 1.0,
-        freeze_mode: float = 0.0,
+        # room_size: float = 0.5,
+        # damping: float = 0.5,
+        # wet_level: float = 0.33,
+        # dry_level: float = 0.4,
+        # width: float = 1.0,
+        # freeze_mode: float = 0.0,
     ):
         "Add a reverb effect to the audio."
         reverb_effect = Reverb(
-            room_size=room_size,
-            damping=damping,
-            wet_level=wet_level,
-            dry_level=dry_level,
-            width=width,
-            freeze_mode=freeze_mode,
+            # room_size=room_size,
+            # damping=damping,
+            # wet_level=wet_level,
+            # dry_level=dry_level,
+            # width=width,
+            # freeze_mode=freeze_mode,
         )
         suggested_effects.append(reverb_effect)
 
@@ -49,26 +49,38 @@ def call_music_agent(text: str):
         gain_effect = Gain(gain_db)
         suggested_effects.append(gain_effect)
 
+    @tool
+    def bitcrush(bit_depth: int = 8):
+        "Add a bitcrush effect to the audio."
+        bitcrush_effect = Bitcrush(bit_depth=bit_depth)
+        suggested_effects.append(bitcrush_effect)
+
     tools = [
         reverb,
         gain,
+        bitcrush,
     ]
 
-    prompt = hub.pull("hwchase17/openai-tools-agent")
-    prompt.pretty_print()
-    agent = create_tool_calling_agent(llm, tools, prompt)
+    prompting_agent = hub.pull("hwchase17/openai-tools-agent")
+    prompting_agent.pretty_print()
+    agent = create_tool_calling_agent(llm, tools, prompting_agent)
     agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
 
     agent_invoke_result = agent_executor.invoke({"input": text})
     return (agent_invoke_result, suggested_effects)
 
 
-def prompt_sound(prompt: str):
-    agent_invoke_result, suggested_effects = call_music_agent(prompt)
+def AI_alter_sound(prompt_text: str):
+    agent_invoke_result, suggested_effects = call_music_agent(prompt_text)
     suggested_pedalboard = Pedalboard(suggested_effects)
+    print(suggested_effects)
     return suggested_pedalboard
 
 
-sound_effects = prompt_sound(
-    "Add a strong reverb effect to the audio and make it louder"
+sound_effects = AI_alter_sound(
+    "Add effects to this song to make it sound like it's underwater."
 )
+
+# sound_effects = AI_alter_sound(
+#     "Add effects to this song to make it sound like it's played in a cave."
+# )
