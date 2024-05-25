@@ -25,7 +25,7 @@ def dummy_chain(
     pedal = Pedalboard(list_of_effects)
 
     session = Session.load(session_id)
-    session.plugins = list_of_effects
+    session.plugins.extend(list_of_effects)
     track_filepath = session.original.path
     print(track_filepath)
 
@@ -41,14 +41,16 @@ def dummy_chain(
     with AudioFile(filepath, "w", samplerate=samplerate, num_channels=2) as f:
         f.write(effected)
 
+    with open(filepath, "rb") as f:
+        samples = f.read()
+
     new_track = Track(
-        "modified", samplerate / len(f.frames), "unknown", effected, "test.wav"
+        "modified", samplerate / len(f.frames), "unknown", samples, "test.wav"
     )
 
     session.last_modified = new_track
     session.save()
 
-    # TODO: prompt the model to provide an analysis on the effects it suggested
     return {"role": "assistant", "content": "DONE"}
 
 

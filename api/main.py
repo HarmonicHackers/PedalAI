@@ -3,8 +3,7 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
-from session.track import Track
-from files import up, down
+from files import up, down, undo
 from chat import chat
 from session import Session
 
@@ -22,6 +21,7 @@ app.add_middleware(
 app.include_router(up.router)
 app.include_router(down.router)
 app.include_router(chat.router)
+app.include_router(undo.router)
 
 
 @app.get("/")
