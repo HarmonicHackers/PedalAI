@@ -21,26 +21,26 @@ audio_effects_jsons = [
                 "properties": {
                     "room_size": {
                         "type": "number",
-                        "description": "The room size, between 0 and 1.",
+                        "description": "The room size, between 0 and 1. 1 usually is too large, one should only use it for very large rooms.",
                     },
                     "damping": {
                         "type": "number",
-                        "description": "The damping.",
+                        "description": "The damping. A high value will make the reverb sound more muffled.",
                     },
                     "wet_level": {
                         "type": "number",
-                        "description": "The wet level.",
+                        "description": "The wet level. A value of 1 means full wet signal.",
                     },
                     "dry_level": {
                         "type": "number",
-                        "description": "The dry level.",
+                        "description": "The dry level. A value of 1 means full dry signal.",
                     },
                     "freeze_mode": {
                         "type": "number",
-                        "description": "The freeze mode.",
+                        "description": "The freeze mode. A value of 1 means the reverb will freeze.",
                     },
                 },
-                "required": ["room_size"],
+                "required": ["room_size", "damping"],
             },
         },
     },
@@ -55,6 +55,7 @@ audio_effects_jsons = [
                     "bit_depth": {
                         "type": "number",
                         "description": "The bit depth.",
+                        "default": 8,
                     }
                 },
                 "required": ["bit_depth"],
@@ -72,6 +73,7 @@ audio_effects_jsons = [
                     "gain_db": {
                         "type": "number",
                         "description": "The gain in decibels.",
+                        "default": "3.0",
                     }
                 },
                 "required": ["gain_db"],
@@ -279,7 +281,7 @@ def get_pedal_effects_from_text(text):
         temperature=0.1,  # Creativity level
     )
 
-    # print(response.choices[0].message.content)
+    # print(response.choices[0].message.content) # User input
 
     # Iterate over the tool calls and apply the effects
     for tool_call in response.choices[0].message.tool_calls:
@@ -287,7 +289,8 @@ def get_pedal_effects_from_text(text):
         func_params = json.loads(tool_call.function.arguments)
 
         # Call the function with the parameters using the map & wrapper
-        functions_effects_map[func_name](**func_params)
+        func_result = functions_effects_map[func_name](**func_params)
+        # print(func_result)
 
     # Return the suggested effects list (list of effect objects to apply to the audio track later on)
     return suggested_effects_list
