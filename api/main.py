@@ -1,7 +1,9 @@
+import os
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
+from session.track import Track
 from files import up, down
 from chat import chat
 from session import Session
@@ -25,6 +27,8 @@ app.include_router(chat.router)
 @app.get("/")
 async def home():
     s = Session()
+    s.original = None
+    s.last_modified = None
     s.save()
     return {"session_id": s.id}
 

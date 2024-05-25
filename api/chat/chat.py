@@ -1,8 +1,9 @@
 from typing import Any, List, Tuple
 from agents import get_pedal_effects_from_text
-from session.session import Session
-from session.track import Track
+from session import Session
+from session import Track
 from fastapi import File, Request, UploadFile, APIRouter
+
 
 from pedalboard import Pedalboard
 from pedalboard.io import AudioFile
@@ -24,7 +25,8 @@ def dummy_chain(
     pedal = Pedalboard(list_of_effects)
 
     session = Session.load(session_id)
-    track_filepath = session.get_last_one().path
+    session.plugins = list_of_effects
+    track_filepath = session.original.path
     print(track_filepath)
 
     samplerate = 44100
@@ -34,19 +36,16 @@ def dummy_chain(
 
     effected = pedal(audio, samplerate)
 
-    global counter
-    counter += 1
-
-    filepath = (
-        "pedalAi/sessions/" + session_id + "/effected" + str(counter) + ".wav"
-    )
+    filepath = "pedalAi/sessions/" + session_id + "/modified.wav"
 
     with AudioFile(filepath, "w", samplerate=samplerate, num_channels=2) as f:
         f.write(effected)
 
-    new_track = Track("test.wav", 0.0, "unknown", b"test", "test.wav")
+    new_track = Track(
+        "modified", samplerate / len(f.frames), "unknown", effected, "test.wav"
+    )
 
-    session.add_track(new_track)
+    session.last_modified = new_track
     session.save()
 
     return {"role": "assistant", "content": "DONE"}
