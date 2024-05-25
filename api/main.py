@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 from files import up
 from chat import chat
+from session import Session, Track
 
 
 app = FastAPI()
@@ -22,7 +23,9 @@ app.include_router(chat.router)
 
 @app.get("/")
 async def home():
-    return "Hello world!"
+    s = Session(path="test_sessions")
+    s.save()
+    return {"session_id": s.id}
 
 
 if __name__ == "__main__":
