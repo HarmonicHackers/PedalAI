@@ -2,6 +2,7 @@ from mistralai.client import MistralClient
 from mistralai.models.chat_completion import ChatMessage
 import os
 
+# Model & API key environment variable
 model = "mistral-large-latest"
 api_key = os.environ.get("MISTRAL_API_KEY")
 
@@ -220,6 +221,7 @@ audio_effects_jsons = [
             },
         },
     },
+    # Add more effects here...
 ]
 
 
