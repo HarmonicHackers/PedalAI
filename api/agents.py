@@ -237,8 +237,10 @@ audio_effects_jsons = [
     # Add more effects here...
 ]
 
+from mistralai.models.chat_completion import ToolCall
 
-def get_plugins_from_tool_calls(tool_calls):
+
+def get_plugins_from_tool_calls(tool_calls: list[ToolCall]):
     import functools, json
 
     # Initialize the list that will store the suggested effects

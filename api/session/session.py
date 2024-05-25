@@ -9,6 +9,7 @@ from pedalboard import Plugin
 from pedalboard.io import AudioFile
 import numpy as np
 import pickle
+from mistralai.models.chat_completion import ToolCall
 
 DEAFAULT_SAMPLE_RATE = 44100
 DEFAULT_NUM_CHANNELS = 2
@@ -16,7 +17,7 @@ DEFAULT_NUM_CHANNELS = 2
 
 class Session:
     def __init__(self, path: str = "./pedalAi/sessions", **kwargs) -> None:
-        self.plugins: List[any] = []
+        self.plugins: List[ToolCall] = []
         self.id = kwargs.get("session_id")
         if self.id is None:
             self.id = "session_{}".format(str(uuid.uuid4()))
