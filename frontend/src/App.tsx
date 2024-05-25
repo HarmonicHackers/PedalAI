@@ -105,6 +105,7 @@ function Chat({
           onChange={(e) => setCurrentText(e.target.value)}
         />
         <button
+          disabled={loading}
           className=" p-2 rounded-lg border-none bg-black text-white shadow-sm"
           onClick={() => sendMessage(currentText)}
         >
