@@ -23,6 +23,9 @@ class Session:
             with open(track.path, "wb") as f:
                 f.write(track.contents)
 
+    def get_last_one(self) -> Track:
+        return self.tracks[-1]
+
     def add_track(self, track: Track) -> None:
         self.tracks.append(track)
 

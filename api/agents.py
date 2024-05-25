@@ -107,7 +107,11 @@ def get_pedal_effects_from_text(text):
 
     client = MistralClient(api_key=api_key)
     response = client.chat(
-        model=model, messages=messages, tools=tools, tool_choice="any", temperature=0.1
+        model=model,
+        messages=messages,
+        tools=tools,
+        tool_choice="any",
+        temperature=0.1,
     )
     import json
 
@@ -122,11 +126,11 @@ def get_pedal_effects_from_text(text):
     return array
 
 
-effects = get_pedal_effects_from_text(
-    "Add effects to this song to make it sound like it's played in a cathedral."
-)
-print(effects)
-effects = get_pedal_effects_from_text(
-    "Add effects to this song to make it sound like it's underwater."
-)
-print(effects)
+# effects = get_pedal_effects_from_text(
+#     "Add effects to this song to make it sound like it's played in a cathedral."
+# )
+# print(effects)
+# effects = get_pedal_effects_from_text(
+#     "Add effects to this song to make it sound like it's underwater."
+# )
+# print(effects)

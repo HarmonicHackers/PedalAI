@@ -17,5 +17,6 @@ from fastapi.responses import FileResponse
 @router.get("/{session_id}/download")
 async def download(session_id: str):
     session = Session.load(session_id)
-    track_filepath = session.tracks[0].path
+    track_filepath = session.get_last_one().path
+    print(track_filepath)
     return FileResponse(track_filepath, media_type="audio/wav")

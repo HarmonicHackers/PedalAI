@@ -19,7 +19,13 @@ const defaultMessages: Message[] = [
 
 import { useRef } from "react";
 
-function Chat({ reloadAudioFile }: { reloadAudioFile: () => Promise<void> }) {
+function Chat({
+  reloadAudioFile,
+  sessionId,
+}: {
+  reloadAudioFile: () => Promise<void>;
+  sessionId: string;
+}) {
   const [messages, setMessages] = useState<Message[]>(defaultMessages);
   const [currentText, setCurrentText] = useState("");
   const scrollContainer = useRef<HTMLDivElement>(null);
@@ -29,13 +35,13 @@ function Chat({ reloadAudioFile }: { reloadAudioFile: () => Promise<void> }) {
       ...messages,
       { role: "user", content: message },
     ]);
-    const response = await fetch("/api/chat/completions", {
+    const response = await fetch(`/api/${sessionId}/chat/completions`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        messages,
+        messages: [...messages, { role: "user", content: currentText }],
       }),
     });
     if (!response.ok) {
@@ -46,7 +52,7 @@ function Chat({ reloadAudioFile }: { reloadAudioFile: () => Promise<void> }) {
     setMessages((messages) => [...messages, data.message]);
     setCurrentText("");
     scrollContainer.current?.scrollTo(0, scrollContainer.current?.scrollHeight);
-    // await reloadAudioFile();
+    await reloadAudioFile();
   }
 
   return (
@@ -182,7 +188,7 @@ function App() {
           {blob && <Waveform audio={blob} />}
         </div>
         <div>
-          <Chat reloadAudioFile={reloadAudioFile} />
+          <Chat reloadAudioFile={reloadAudioFile} sessionId={sessionId} />
         </div>
         div
       </div>
