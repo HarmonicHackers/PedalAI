@@ -25,7 +25,7 @@ audio_effects_jsons = [
                     },
                     "damping": {
                         "type": "number",
-                        "description": "The damping. A high value will make the reverb sound more muffled.",
+                        "description": "The damping. A high value will make the reverb sound more muffled, between 0 and 1.",
                     },
                     "wet_level": {
                         "type": "number",
@@ -292,5 +292,65 @@ def get_pedal_effects_from_text(text):
         func_result = functions_effects_map[func_name](**func_params)
         # print(func_result)
 
+    def get_describing_text(effects):
+        describing_text = (
+            "I have applied the following effects to the audio track: "
+        )
+        for effect in effects:
+            describing_text += f"{effect.function.name} "
+
+        messages = [
+            ChatMessage(
+                role="system",
+                # content="Give some expressive opinion in 2 sentences on what the user asked, and what effect the user could ask for. Example: 'Oh nice good idea, try applying this!'",
+                content="Justify what you did according to the user preference and make some recommandations. Example: 'Oh nice good idea, try applying this!. Write only two sentence'",
+            ),
+            ChatMessage(role="user", content=text),
+            ChatMessage(role="user", content=describing_text),
+        ]
+
+        reponse = client.chat(
+            model="mistral-small-latest",
+            messages=messages,
+            temperature=0,
+        )
+        describing_text = reponse.choices[0].message.content
+
+        return describing_text
+
+    describing_text = get_describing_text(
+        response.choices[0].message.tool_calls
+    )
+
+    def get_describing_text(effects):
+        describing_text = (
+            "I have applied the following effects to the audio track: "
+        )
+        for effect in effects:
+            describing_text += f"{effect.function.name} "
+
+        messages = [
+            ChatMessage(
+                role="system",
+                # content="Give some expressive opinion in 2 sentences on what the user asked, and what effect the user could ask for. Example: 'Oh nice good idea, try applying this!'",
+                content="Justify what you did according to the user preference and make some recommandations. Example: 'Oh nice good idea, try applying this!. Write only two sentence'",
+            ),
+            ChatMessage(role="user", content=text),
+            ChatMessage(role="user", content=describing_text),
+        ]
+
+        reponse = client.chat(
+            model="mistral-small-latest",
+            messages=messages,
+            temperature=0,
+        )
+        describing_text = reponse.choices[0].message.content
+
+        return describing_text
+
+    describing_text = get_describing_text(
+        response.choices[0].message.tool_calls
+    )
+
     # Return the suggested effects list (list of effect objects to apply to the audio track later on)
-    return suggested_effects_list
+    return suggested_effects_list, describing_text

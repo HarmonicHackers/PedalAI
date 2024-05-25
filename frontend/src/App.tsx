@@ -27,10 +27,12 @@ function Chat({
 }) {
   const [messages, setMessages] = useState<Message[]>(defaultMessages);
   const [currentText, setCurrentText] = useState("");
+  const [loading, setLoading] = useState(false);
   const scrollContainer = useRef<HTMLDivElement>(null);
 
   async function sendMessage(message: string) {
     setCurrentText("");
+    setLoading(true);
     setMessages((messages) => [
       ...messages,
       { role: "user", content: message },
@@ -47,6 +49,7 @@ function Chat({
     if (!response.ok) {
       throw new Error(response.statusText);
     }
+    setLoading(false);
 
     const data = await response.json();
     setMessages((messages) => [...messages, data.message]);
@@ -55,7 +58,8 @@ function Chat({
   }
 
   return (
-    <div className="flex flex-col w-full">
+    <div className="flex flex-col w-full p-2">
+      <span className="text-black text-lg font-bold">AI Chat</span>
       <div
         ref={scrollContainer}
         className="flex flex-col w-full h-72 overflow-y-scroll"
@@ -78,6 +82,15 @@ function Chat({
             </div>
           </div>
         ))}
+        {loading && (
+          <div className="flex justify-center items-center h-full ">
+            <div className="flex items-center justify-center">
+              <div className="animate-spin">
+                <div className="h-4 w-4 border-t-2 border-b-2 border-black"></div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
       <div className="flex gap-2">
         <input
@@ -111,14 +124,34 @@ function App() {
   const [sessionId, setSessionId] = useState<string>();
   const [value, setValue] = useState(0);
 
-  useEffect(() => {
-    async function fetchSessionId() {
-      const res = await fetch("/api");
-      const data = await res.json();
-      setSessionId(data["session_id"]);
+  async function startNewSession() {
+    const res = await fetch("/api");
+    const data = await res.json();
+    setSessionId(data["session_id"]);
+
+    console.log("start new session", data["session_id"]);
+    localStorage.setItem("sessionId", data["session_id"]);
+  }
+
+  async function restoreLastSession() {
+    const sessionId = localStorage.getItem("sessionId");
+    if (sessionId) {
+      console.log("restore last session", sessionId);
+      setSessionId(sessionId);
+      reloadAudioFile();
+      // startNewSession();
     }
-    fetchSessionId();
-  }, []);
+  }
+
+  useEffect(() => {
+    reloadAudioFile();
+  }, [sessionId]);
+
+  // useEffect(() => {
+  //   if (localStorage.getItem("sessionId")) {
+  //     startNewSession();
+  //   }
+  // }, []);
 
   async function uploadFile(file: File) {
     const data = new FormData();
@@ -136,12 +169,30 @@ function App() {
 
   async function reloadAudioFile() {
     const resFile = await fetch(`/api/${sessionId}/download`);
+    if (!resFile.ok) {
+      throw new Error(resFile.statusText);
+    }
     const uploadedfile = await resFile.blob();
     setBlob(uploadedfile);
   }
 
   if (!sessionId) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex flex-col items-center gap-2 justify-center h-screen">
+        <button
+          className=" p-2 rounded-lg border-none bg-black text-white shadow-sm"
+          onClick={startNewSession}
+        >
+          Start New Session
+        </button>
+        <button
+          className=" p-2 rounded-lg border-none bg-black text-white shadow-sm"
+          onClick={restoreLastSession}
+        >
+          Restore Last Session
+        </button>
+      </div>
+    );
   }
 
   return (
@@ -165,33 +216,54 @@ function App() {
         )}
       </div>
       <div className="flex-1 bg-zinc-100 grid grid-cols-2 gap-2">
-        <div className="flex flex-col gap-4 p-5">
-          <div className="bg-white p-2 rounded-lg text-black flex items-center justify-between shadow-sm">
-            <span>EffectName</span>
-            <div className="flex items-center gap-2">
-              <White
-                diameter={60}
-                min={0}
-                max={100}
-                step={1}
-                value={value}
-                onValueChange={setValue}
-                ariaLabelledBy={"my-label"}
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                }}
-              >
-                <label className="text-center" id={"my-label"}>
-                  Some label
-                </label>
-              </White>
-            </div>
+        <div className="flex flex-col p-2">
+          <span className="text-black text-lg font-bold">AI Pedal</span>
+          <div className="flex flex-col gap-4 ">
+            <EffectItem />
+            <EffectItem />
           </div>
         </div>
 
         <Chat reloadAudioFile={reloadAudioFile} sessionId={sessionId} />
+      </div>
+    </div>
+  );
+}
+
+function EffectItem() {
+  const [value, setValue] = useState(0);
+  return (
+    <div className="bg-white p-2 rounded-lg text-black flex items-center justify-between shadow-sm ">
+      <div>
+        {/* checkbox */}
+        <input
+          type="checkbox"
+          id="checkbox"
+          className="mr-2"
+          // checked={effectEnabled}
+          // onChange={(e) => setEffectEnabled(e.target.checked)}
+        />
+        <span>EffectName</span>
+      </div>
+      <div className="flex items-center gap-2">
+        <White
+          diameter={60}
+          min={0}
+          max={100}
+          step={1}
+          value={value}
+          onValueChange={setValue}
+          ariaLabelledBy={"my-label"}
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
+          <label className="text-center" id={"my-label"}>
+            Some label
+          </label>
+        </White>
       </div>
     </div>
   );

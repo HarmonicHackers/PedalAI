@@ -20,7 +20,7 @@ def dummy_chain(
     print(messages)
     text = messages[-1]["content"]
     print(text)
-    list_of_effects = get_pedal_effects_from_text(text)
+    list_of_effects, chat_message = get_pedal_effects_from_text(text)
     print(list_of_effects)
     pedal = Pedalboard(list_of_effects)
 
@@ -50,7 +50,7 @@ def dummy_chain(
     session.last_modified = new_track
     session.save()
 
-    return {"role": "assistant", "content": "DONE"}
+    return {"role": "assistant", "content": chat_message}
 
 
 @router.post("/{session_id}/chat/completions")
