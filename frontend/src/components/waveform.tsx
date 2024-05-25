@@ -27,10 +27,11 @@ const Waveform = ({
   useEffect(() => {
     const waveSurfer = WaveSurfer.create({
       container: containerRef.current!,
-      barWidth: 2,
+      barWidth: 3,
       barHeight: 1,
       width: containerRef.current!.clientWidth,
       height: containerRef.current!.clientHeight,
+      waveColor: "black",
     });
     waveSurfer.loadBlob(audio);
     // waveSurfer.load(audio);
@@ -64,17 +65,24 @@ const Waveform = ({
 
       <div className="w-full h-full relative">
         <div className="h-full w-full" ref={containerRef} />
-        <div
+
+        {/* <div
           style={{
             left: value[0] + "%",
             width: value[1] - value[0] + "%",
-            height: "100px",
+            height: "500px",
+            backdropFilter: "blur(20px)",
           }}
-          className="bg-red-500 opacity-50 absolute top-0 bottom-0 bg-blend-lighten"
-        ></div>
-        <div className="absolute opacity-50 top-1/2 left-0 right-0 z-50 w-full bottom-0">
-          <pre>{JSON.stringify(value, null, 2)}</pre>
-          <RangeSlider value={value} onInput={setValue} />
+          className="bg-blue-500 opacity-50 absolute top-0 bottom-0 "
+        /> */}
+        <div className="absolute opacity-50 top-1/2 left-0 right-0 z-50 h-[10px] bg-red-500 flex items-center justify-center ">
+          {/* <pre>{JSON.stringify(value, null, 2)}</pre> */}
+          <RangeSlider
+            value={value}
+            onInput={setValue}
+            id="range-slider-yellow"
+            className="z-50"
+          />
         </div>
       </div>
     </div>

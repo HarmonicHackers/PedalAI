@@ -204,6 +204,13 @@ function App() {
     );
   }
 
+  function downloadFile(file: Blob) {
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(file);
+    a.download = "pedalAi.wav";
+    a.click();
+  }
+
   return (
     <div className="flex flex-col h-screen">
       <div className="flex-1 ">
@@ -229,6 +236,20 @@ function App() {
         )}
       </div>
       <div className="bg-zinc-100">
+        <div>
+          <button
+            disabled={!blob}
+            onClick={() => {
+              if (!blob) {
+                return;
+              }
+              downloadFile(blob);
+            }}
+            className=" p-2 rounded-lg border-none bg-black text-white shadow-sm"
+          >
+            Download
+          </button>
+        </div>
         <Chat
           reloadAudioFile={reloadAudioFile}
           sessionId={sessionId}

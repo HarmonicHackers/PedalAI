@@ -1,3 +1,35 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+#range-slider-yellow {
+  /* backgroundcolor: yellow; */
+  /* display: hidden; */
+  /* background: url("data:image/svg+xml,%3Csvg width='30' height='30' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23555' fill-rule='evenodd'%3E%3Cpath d='M0 40L40 0H20L0 20M40 40V20L20 40'/%3E%3C/g%3E%3C/svg%3E")
+    #333; */
+}
+
+#range-slider-yellow .range-slider__range {
+  display: hidden;
+  z-index: 50;
+  background: #ffbf00;
+  transition: height 0.3s;
+}
+
+#range-slider-yellow .range-slider__thumb {
+  z-index: 50;
+  width: 16px;
+  height: 500px;
+  border-radius: 0;
+  background: red;
+  cursor: pointer;
+  transition: transform 0.3s;
+}
+
+#range-slider-yellow .range-slider__thumb[data-active] {
+  transform: translate(-50%, -50%) scale(1.15);
+}
+
+#range-slider-yellow .range-slider__range[data-active] {
+  height: 16px;
+}
