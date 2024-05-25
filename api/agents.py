@@ -1,6 +1,7 @@
 from mistralai.client import MistralClient
 from mistralai.models.chat_completion import ChatMessage
 import os
+import weave
 import functools, json
 from pedalboard import (
     Reverb,
@@ -16,6 +17,7 @@ from pedalboard import (
 # Model & API key environment variable
 model = "mistral-large-latest"
 api_key = os.environ.get("MISTRAL_API_KEY")
+weave.init("Pedal-AI")
 
 # Check if the API key is set & raise an error if not
 if not api_key:
