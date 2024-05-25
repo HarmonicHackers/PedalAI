@@ -5,14 +5,15 @@ from fastapi import File, Request, UploadFile, APIRouter
 router = APIRouter()
 
 
-def dummy_chain(prompt: str) -> Tuple[List[Any], str]:
-    return ([], "")
+def dummy_chain(messages: List[dict]) -> Tuple[List[Any], str]:
+    print(messages)
+    return {"role": "assistant", "content": "Hello I am pedalAI assistant"}
 
 
 @router.post("/chat/completions")
 async def chat(r: Request):
     data = await r.json()
-    prompt = data["content"]
-    # call to chain.invoke(prompt)
-    filters, response = dummy_chain(prompt)
-    return {"filters": filters, "response": response}
+    messages = data["messages"]
+    # call to chain.invoke(messages)
+    message = dummy_chain(messages)
+    return {"message": message}

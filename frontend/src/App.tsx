@@ -17,13 +17,19 @@ const defaultMessages: Message[] = [
   },
 ];
 
+import { useRef } from "react";
+
 function Chat({ reloadAudioFile }: { reloadAudioFile: () => Promise<void> }) {
   const [messages, setMessages] = useState<Message[]>(defaultMessages);
   const [currentText, setCurrentText] = useState("");
+  const scrollContainer = useRef<HTMLDivElement>(null);
 
   async function sendMessage(message: string) {
-    setMessages([...messages, { role: "user", content: message }]);
-    const response = await fetch("/api/chat", {
+    setMessages((messages) => [
+      ...messages,
+      { role: "user", content: message },
+    ]);
+    const response = await fetch("/api/chat/completions", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -37,36 +43,50 @@ function Chat({ reloadAudioFile }: { reloadAudioFile: () => Promise<void> }) {
     }
 
     const data = await response.json();
-    setMessages([...messages, data.message]);
-    await reloadAudioFile();
+    setMessages((messages) => [...messages, data.message]);
+    setCurrentText("");
+    scrollContainer.current?.scrollTo(0, scrollContainer.current?.scrollHeight);
+    // await reloadAudioFile();
   }
 
   return (
     <div style={{ display: "flex", flexDirection: "column", width: "100%" }}>
-      {messages.map((message, index) => (
-        <div
-          key={index}
-          style={{
-            display: "flex",
-            justifyContent: message.role === "user" ? "flex-end" : "flex-start",
-            color: message.role === "user" ? "#000" : "#000",
-            margin: "10px 0",
-          }}
-        >
+      <div
+        ref={scrollContainer}
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          width: "100%",
+          height: "300px",
+          overflowY: "scroll",
+        }}
+      >
+        {messages.map((message, index) => (
           <div
+            key={index}
             style={{
-              maxWidth: "60%",
-              padding: "10px",
-              borderRadius: "10px",
-              backgroundColor: message.role === "user" ? "#DCF8C6" : "#FFF",
+              display: "flex",
+              justifyContent:
+                message.role === "user" ? "flex-end" : "flex-start",
               color: message.role === "user" ? "#000" : "#000",
-              boxShadow: "0 1px 2px rgba(0, 0, 0, 0.1)",
+              margin: "10px 0",
             }}
           >
-            {message.content}
+            <div
+              style={{
+                maxWidth: "60%",
+                padding: "10px",
+                borderRadius: "10px",
+                backgroundColor: message.role === "user" ? "#DCF8C6" : "#FFF",
+                color: message.role === "user" ? "#000" : "#000",
+                boxShadow: "0 1px 2px rgba(0, 0, 0, 0.1)",
+              }}
+            >
+              {message.content}
+            </div>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
       <input
         type="text"
         style={{
@@ -78,6 +98,7 @@ function Chat({ reloadAudioFile }: { reloadAudioFile: () => Promise<void> }) {
           color: "#000",
           boxShadow: "0 1px 2px rgba(0, 0, 0, 0.1)",
         }}
+        value={currentText}
         onChange={(e) => setCurrentText(e.target.value)}
       />
       <button
