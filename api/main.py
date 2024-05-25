@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 from files import up
 from chat import chat
-from session import Session, Track
+from session import Session
 
 
 app = FastAPI()
