@@ -1,8 +1,8 @@
 from fastapi import File, UploadFile, APIRouter
 from session import Session, Track
 
-
 router = APIRouter()
+
 
 @router.post("/{session_id}/upload")
 def upload(session_id: str, file: UploadFile = File(...)):
