@@ -26,6 +26,7 @@ app.include_router(chat.router)
 
 @app.get("/")
 async def home():
+    # Create a new session & return the session id
     s = Session()
     s.original = None
     s.last_modified = None
@@ -34,5 +35,9 @@ async def home():
 
 
 if __name__ == "__main__":
+    # Load the Mistral API key from env
     load_dotenv()
+
+    # Start the server on port 4000
+    print("Starting server on port 4000 🚀")
     uvicorn.run(app, host="0.0.0.0", port=4000)

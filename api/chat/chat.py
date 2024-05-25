@@ -48,6 +48,7 @@ def dummy_chain(
     session.last_modified = new_track
     session.save()
 
+    # TODO: prompt the model to provide an analysis on the effects it suggested
     return {"role": "assistant", "content": "DONE"}
 
 
