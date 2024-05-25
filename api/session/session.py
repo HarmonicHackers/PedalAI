@@ -8,9 +8,11 @@ from session.track import Track
 
 
 class Session:
-    def __init__(self, path: str = "./pedalAi/sessions") -> None:
+    def __init__(self, path: str = "./pedalAi/sessions", **kwargs) -> None:
         self.tracks: List[Track] = []
-        self.id = "session_{}".format(str(uuid.uuid4()))
+        self.id = kwargs.get("session_id")
+        if self.id is None:
+            self.id = "session_{}".format(str(uuid.uuid4()))
         self.save_path = os.path.join(path, self.id)
 
     def save(self) -> None:
@@ -18,8 +20,7 @@ class Session:
             os.makedirs(self.save_path)
 
         for track in self.tracks:
-            track_path = os.path.join(self.save_path, track.name)
-            with open(track_path, "wb") as f:
+            with open(track.path, "wb") as f:
                 f.write(track.contents)
 
     def add_track(self, track: Track) -> None:
@@ -28,12 +29,12 @@ class Session:
     @staticmethod
     def load(session_id: str) -> Session:
         path = os.path.join("./pedalAi/sessions", session_id)
-        session = Session(path)
+        session = Session("./pedalAi/sessions", session_id=session_id)
         files = os.listdir(path)
         for file in files:
             track_path = os.path.join(path, file)
             with open(track_path, "rb") as f:
-                t = Track(file, 0.0, "unknown", f.read())
+                t = Track(file, 0.0, "unknown", f.read(), track_path)
                 session.tracks.append(t)
 
         return session
