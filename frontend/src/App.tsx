@@ -1,4 +1,5 @@
 import { useState } from "react";
+
 // import reactLogo from "./assets/react.svg";
 // import viteLogo from "/vite.svg";
 
@@ -21,9 +22,11 @@ import { useRef } from "react";
 function Chat({
   reloadAudioFile,
   sessionId,
+  percentages,
 }: {
   reloadAudioFile: () => Promise<void>;
   sessionId: string;
+  percentages: [number, number];
 }) {
   const [messages, setMessages] = useState<Message[]>(defaultMessages);
   const [currentText, setCurrentText] = useState("");
@@ -44,6 +47,8 @@ function Chat({
       },
       body: JSON.stringify({
         messages: [...messages, { role: "user", content: currentText }],
+        percentage_begin: percentages[0],
+        percentage_end: percentages[1],
       }),
     });
     if (!response.ok) {
@@ -177,6 +182,9 @@ function App() {
     setBlob(uploadedfile);
   }
 
+  const [selectedPercentages, setSelectedPercentages] = useState<
+    [number, number]
+  >([0, 100]);
   if (!sessionId) {
     return (
       <div className="flex flex-col items-center gap-2 justify-center h-screen">
@@ -200,7 +208,11 @@ function App() {
     <div className="flex flex-col h-screen">
       <div className="flex-1 ">
         {blob ? (
-          <Waveform audio={blob} />
+          <Waveform
+            audio={blob}
+            value={selectedPercentages}
+            setValue={setSelectedPercentages}
+          />
         ) : (
           <div className="flex flex-col items-center justify-center h-full">
             <span>Choose a file to upload or drag and drop a file here</span>
@@ -216,55 +228,12 @@ function App() {
           </div>
         )}
       </div>
-      <div className="flex-1 bg-zinc-100 grid grid-cols-2 gap-2">
-        <div className="flex flex-col p-2">
-          <span className="text-black text-lg font-bold">AI Pedal</span>
-          <div className="flex flex-col gap-4 ">
-            <EffectItem />
-            <EffectItem />
-          </div>
-        </div>
-
-        <Chat reloadAudioFile={reloadAudioFile} sessionId={sessionId} />
-      </div>
-    </div>
-  );
-}
-
-function EffectItem() {
-  const [value, setValue] = useState(0);
-  return (
-    <div className="bg-white p-2 rounded-lg text-black flex items-center justify-between shadow-sm ">
-      <div>
-        {/* checkbox */}
-        <input
-          type="checkbox"
-          id="checkbox"
-          className="mr-2"
-          // checked={effectEnabled}
-          // onChange={(e) => setEffectEnabled(e.target.checked)}
+      <div className="bg-zinc-100">
+        <Chat
+          reloadAudioFile={reloadAudioFile}
+          sessionId={sessionId}
+          percentages={selectedPercentages}
         />
-        <span>EffectName</span>
-      </div>
-      <div className="flex items-center gap-2">
-        <White
-          diameter={60}
-          min={0}
-          max={100}
-          step={1}
-          value={value}
-          onValueChange={setValue}
-          ariaLabelledBy={"my-label"}
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-          }}
-        >
-          <label className="text-center" id={"my-label"}>
-            Some label
-          </label>
-        </White>
       </div>
     </div>
   );

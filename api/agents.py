@@ -234,6 +234,14 @@ audio_effects_jsons = [
             },
         },
     },
+    {
+        "type": "function",
+        "function": {
+            "name": "do_nothing",
+            "description": "Does nothing",
+            "parameters": {},
+        },
+    },
     # Add more effects here...
 ]
 
@@ -250,8 +258,12 @@ def get_plugins_from_tool_calls(tool_calls: list[ToolCall]):
     def wrapper(func, **kwargs):
         suggested_effects_list.append(func(**kwargs))
 
+    def do_nothing():
+        pass
+
     # Create a dictionary that maps the function names to the actual functions
     functions_effects_map = {
+        "do_nothing": do_nothing,
         "reverb_effect": functools.partial(wrapper, Reverb),
         "bitcrush_effect": functools.partial(wrapper, Bitcrush),
         "gain_effect": functools.partial(wrapper, Gain),

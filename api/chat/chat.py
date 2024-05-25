@@ -51,8 +51,11 @@ def dummy_chain(
 
     with AudioFile(track_filepath).resampled_to(samplerate) as f:
         audio = f.read(f.frames)
+        start_timestamp = round(((start / 100) * f.frames) / samplerate)
+        end_timestamp = round(((end / 100) * f.frames) / samplerate)
+        print(start_timestamp, end_timestamp)
         audio_part, start_frame, end_frame = get_audio_part(
-            samplerate, audio, start, end
+            samplerate, audio, start_timestamp, end_timestamp
         )
 
     effected = pedal(audio_part, samplerate)
@@ -79,8 +82,12 @@ def dummy_chain(
 async def chat(session_id: str, r: Request):
     data = await r.json()
     messages = data["messages"]
+
+    percentage_begin = data["percentage_begin"]
+    percentage_end = data["percentage_end"]
+
     # call to chain.invoke(messages)
     message = dummy_chain(
-        messages, session_id, data["timestamp_begin"], data["timestamp_end"]
+        messages, session_id, percentage_begin, percentage_end
     )
     return {"message": message}

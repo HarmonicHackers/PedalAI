@@ -23,9 +23,18 @@ importers:
       react-drag-drop-files:
         specifier: ^2.3.10
         version: 2.3.10(@babel/core@7.24.6)(react-dom@18.3.1(react@18.3.1))(react-is@16.13.1)(react@18.3.1)
+      react-draggable:
+        specifier: ^4.4.6
+        version: 4.4.6(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react-icons:
         specifier: ^5.2.1
         version: 5.2.1(react@18.3.1)
+      react-range-slider-input:
+        specifier: ^3.0.7
+        version: 3.0.7
+      wavesurfer-react:
+        specifier: ^3.0.2
+        version: 3.0.2(react@18.3.1)(wavesurfer.js@7.7.15)
       wavesurfer.js:
         specifier: ^7.7.15
         version: 7.7.15
@@ -691,6 +700,10 @@ packages:
     resolution: {integrity: sha512-7VT13fmjotKpGipCW9JEQAusEPE+Ei8nl6/g4FBAmIm0GOOLMua9NDDo/DWp0ZAxCr3cPq5ZpBqmPAQgDda2Pw==}
     engines: {node: '>= 8.10.0'}
 
+  clsx@1.2.1:
+    resolution: {integrity: sha512-EcR6r5a8bj6pu3ycsa/E/cKVGuTgZJZdsyUYHOksG/UHIiKfjxzRxYJpyVBwYaQeOvghal9fcc4PidlgzugAQg==}
+    engines: {node: '>=6'}
+
   color-convert@1.9.3:
     resolution: {integrity: sha512-QfAUtd+vFdAtFQcC8CCyYt1fYWxSqAiK2cSD6zDB8N3cpsEBAvRxp9zOGg6G/SHHJYAT88/az/IuDGALsNVbGg==}
 
@@ -713,6 +726,9 @@ packages:
 
   convert-source-map@2.0.0:
     resolution: {integrity: sha512-Kvp459HrV2FEJ1CAsi1Ku+MY3kasH19TFykTz2xWmMeq6bk2NU3XXvfJ+Q61m0xktWwt+1HSYf3JZsTms3aRJg==}
+
+  core-js@3.37.1:
+    resolution: {integrity: sha512-Xn6qmxrQZyB0FFY8E3bgRXei3lWDJHhvI+u0q9TKIYM49G8pAr0FgnnrFRAmsbptZL1yxRADVXn+x5AGsbBfyw==}
 
   cross-spawn@7.0.3:
     resolution: {integrity: sha512-iRDPJKUPVEND7dHPO8rkbOnPpyDygcDFtWjpeWNCgy8WP2rXcxXL8TskReQl6OrB2G7+UJrags1q15Fudc7G6w==}
@@ -1243,6 +1259,12 @@ packages:
       react: ^18.0.0
       react-dom: ^18.0.0
 
+  react-draggable@4.4.6:
+    resolution: {integrity: sha512-LtY5Xw1zTPqHkVmtM3X8MUOxNDOUhv/khTgBgrUvwaS064bwVvxT+q5El0uUFNx5IEPKXuRejr7UqLwBIg5pdw==}
+    peerDependencies:
+      react: '>= 16.3.0'
+      react-dom: '>= 16.3.0'
+
   react-icons@5.2.1:
     resolution: {integrity: sha512-zdbW5GstTzXaVKvGSyTaBalt7HSfuK5ovrzlpyiWHAFXndXTdd/1hdDHI4xBM1Mn7YriT6aqESucFl9kEXzrdw==}
     peerDependencies:
@@ -1250,6 +1272,9 @@ packages:
 
   react-is@16.13.1:
     resolution: {integrity: sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==}
+
+  react-range-slider-input@3.0.7:
+    resolution: {integrity: sha512-yAJDDMUNkILOcZSCLCVbwgnoAM3v0AfdDysTCMXDwY/+ZRNRlv98TyHbVCwPFEd7qiI8Ca/stKb0GAy//NybYw==}
 
   react-refresh@0.14.2:
     resolution: {integrity: sha512-jCvmsr+1IUSMUyzOkRcvnVbX3ZYC6g9TDrDbFuFmRDq7PD4yaGbLKNQL6k2jnArV8hjYxh7hVhAZB6s9HDGpZA==}
@@ -1454,6 +1479,12 @@ packages:
         optional: true
       terser:
         optional: true
+
+  wavesurfer-react@3.0.2:
+    resolution: {integrity: sha512-ATGbisSFrAPiPyOZKIMge7aFKnlu69Vy5XTpZ2H88hRJ64KcK+T3iNlzj/YOregj4HkYxWPzm1t4O617oAft+g==}
+    peerDependencies:
+      react: ^16 || ^17 || ^18 || ^19
+      wavesurfer.js: ^7
 
   wavesurfer.js@7.7.15:
     resolution: {integrity: sha512-qJE7sZ5qnFG9wBtU9+jBpYn7faWXZHEz1I25Xnf4EhGqqS2rFj/hxTtbIaETynalPajxC1xXd/9TnDHWO+mARA==}
@@ -2090,6 +2121,8 @@ snapshots:
     optionalDependencies:
       fsevents: 2.3.3
 
+  clsx@1.2.1: {}
+
   color-convert@1.9.3:
     dependencies:
       color-name: 1.1.3
@@ -2107,6 +2140,8 @@ snapshots:
   concat-map@0.0.1: {}
 
   convert-source-map@2.0.0: {}
+
+  core-js@3.37.1: {}
 
   cross-spawn@7.0.3:
     dependencies:
@@ -2627,11 +2662,23 @@ snapshots:
       - '@babel/core'
       - react-is
 
+  react-draggable@4.4.6(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+    dependencies:
+      clsx: 1.2.1
+      prop-types: 15.8.1
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+
   react-icons@5.2.1(react@18.3.1):
     dependencies:
       react: 18.3.1
 
   react-is@16.13.1: {}
+
+  react-range-slider-input@3.0.7:
+    dependencies:
+      clsx: 1.2.1
+      core-js: 3.37.1
 
   react-refresh@0.14.2: {}
 
@@ -2845,6 +2892,11 @@ snapshots:
       rollup: 4.18.0
     optionalDependencies:
       fsevents: 2.3.3
+
+  wavesurfer-react@3.0.2(react@18.3.1)(wavesurfer.js@7.7.15):
+    dependencies:
+      react: 18.3.1
+      wavesurfer.js: 7.7.15
 
   wavesurfer.js@7.7.15: {}
 
