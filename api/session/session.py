@@ -4,7 +4,6 @@ import os
 from typing import List
 import uuid
 
-from track import Track
 from session.track import Track
 
 
