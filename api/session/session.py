@@ -20,8 +20,7 @@ class Session:
             os.makedirs(self.save_path)
 
         for track in self.tracks:
-            track_path = os.path.join(self.save_path, track.name)
-            with open(track_path, "wb") as f:
+            with open(track.path, "wb") as f:
                 f.write(track.contents)
 
     def add_track(self, track: Track) -> None:
@@ -35,7 +34,7 @@ class Session:
         for file in files:
             track_path = os.path.join(path, file)
             with open(track_path, "rb") as f:
-                t = Track(file, 0.0, "unknown", f.read())
+                t = Track(file, 0.0, "unknown", f.read(), track_path)
                 session.tracks.append(t)
 
         return session
