@@ -40,13 +40,12 @@ def dummy_chain(
 
     with AudioFile(filepath, "w", samplerate=samplerate, num_channels=2) as f:
         f.write(effected)
+        length = f.frames / f.samplerate
 
     with open(filepath, "rb") as f:
         samples = f.read()
 
-    new_track = Track(
-        "modified", samplerate / len(f.frames), "unknown", samples, "test.wav"
-    )
+    new_track = Track("modified", length, "unknown", samples, "test.wav")
 
     session.last_modified = new_track
     session.save()
