@@ -8,6 +8,7 @@ from session.track import Track
 from pedalboard import Plugin
 from pedalboard.io import AudioFile
 import numpy as np
+import pickle
 
 DEAFAULT_SAMPLE_RATE = 44100
 DEFAULT_NUM_CHANNELS = 2
@@ -33,6 +34,10 @@ class Session:
             print("In here")
             with open(self.last_modified.path, "wb") as f:
                 f.write(self.last_modified.contents)
+
+        if len(self.plugins) > 0:
+            with open(os.path.join(self.save_path, "plugins.pkl")) as f:
+                pickle.dump(self.plugins, f)
 
     def add_track(self, track: Track) -> None:
         self.original = track
@@ -74,6 +79,10 @@ class Session:
                 print("if the next print prints, that's not the error")
                 session.last_modified = modified_track
                 print("next print")
+
+        if os.path.exists(os.path.join(session.save_path, "plugins.pkl")):
+            with open(os.path.join(session.save_path, "plugins.pkl")) as f:
+                session.plugins = pickle.load(f)
 
         return session
 
