@@ -14,8 +14,23 @@ router = APIRouter()
 counter = 0
 
 
+def get_audio_part(
+    samplerate: float, samples: Any, start: float, end: float
+) -> Any:
+    start_frame = samplerate * start
+    end_frame = samplerate * end
+    return samples[:, start_frame:end_frame], start_frame, end_frame
+
+
+def replace_audio_part(
+    samples: Any, modified: Any, start_frame: float, end_frame: float
+):
+    samples[:, start_frame:end_frame] = modified
+    return samples
+
+
 def dummy_chain(
-    messages: List[dict], session_id: str
+    messages: List[dict], session_id: str, start: float, end: float
 ) -> Tuple[List[Any], str]:
     print(messages)
     text = messages[-1]["content"]
@@ -36,13 +51,17 @@ def dummy_chain(
 
     with AudioFile(track_filepath).resampled_to(samplerate) as f:
         audio = f.read(f.frames)
+        audio_part, start_frame, end_frame = get_audio_part(
+            samplerate, audio, start, end
+        )
 
-    effected = pedal(audio, samplerate)
+    effected = pedal(audio_part, samplerate)
+    audio = replace_audio_part(audio, effected, start_frame, end_frame)
 
     filepath = "pedalAi/sessions/" + session_id + "/modified.wav"
 
     with AudioFile(filepath, "w", samplerate=samplerate, num_channels=2) as f:
-        f.write(effected)
+        f.write(audio)
         length = f.frames / f.samplerate
 
     with open(filepath, "rb") as f:
@@ -61,5 +80,7 @@ async def chat(session_id: str, r: Request):
     data = await r.json()
     messages = data["messages"]
     # call to chain.invoke(messages)
-    message = dummy_chain(messages, session_id)
+    message = dummy_chain(
+        messages, session_id, data["timestamp_begin"], data["timestamp_end"]
+    )
     return {"message": message}
