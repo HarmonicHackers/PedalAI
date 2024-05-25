@@ -14,6 +14,7 @@ const Waveform = ({ audio }: { audio: Blob }) => {
       barWidth: 2,
       barHeight: 1,
       width: containerRef.current!.clientWidth,
+      height: containerRef.current!.clientHeight,
     });
     waveSurfer.loadBlob(audio);
     // waveSurfer.load(audio);
@@ -27,24 +28,9 @@ const Waveform = ({ audio }: { audio: Blob }) => {
   }, [audio]);
 
   return (
-    <div
-      style={{
-        display: "grid",
-        gridTemplateColumns: "40px 1fr",
-        alignItems: "center",
-        // backgroundColor: "white",
-        width: "100%",
-      }}
-    >
+    <div className="grid grid-cols-[40px_1fr] items-center w-full h-full">
       <button
-        style={{
-          padding: 2,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          backgroundColor: "white",
-          color: "black",
-        }}
+        className="p-0.5 flex items-center justify-center bg-white text-black"
         onClick={() => {
           if (!waveSurferRef.current) {
             throw new Error("WaveSurfer is not ready");
@@ -56,13 +42,7 @@ const Waveform = ({ audio }: { audio: Blob }) => {
       >
         {isPlaying ? <FaPauseCircle size="3em" /> : <FaPlayCircle size="3em" />}
       </button>
-      <div
-        style={{
-          width: "100%",
-          height: "100%",
-        }}
-        ref={containerRef}
-      />
+      <div className="h-full w-full" ref={containerRef} />
     </div>
   );
 };
