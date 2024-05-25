@@ -23,7 +23,7 @@ app.include_router(chat.router)
 
 @app.get("/")
 async def home():
-    s = Session(path="test_sessions")
+    s = Session()
     s.save()
     return {"session_id": s.id}
 

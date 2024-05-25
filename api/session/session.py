@@ -8,9 +8,11 @@ from session.track import Track
 
 
 class Session:
-    def __init__(self, path: str = "./pedalAi/sessions") -> None:
+    def __init__(self, path: str = "./pedalAi/sessions", **kwargs) -> None:
         self.tracks: List[Track] = []
-        self.id = "session_{}".format(str(uuid.uuid4()))
+        self.id = kwargs.get("session_id")
+        if self.id is None:
+            self.id = "session_{}".format(str(uuid.uuid4()))
         self.save_path = os.path.join(path, self.id)
 
     def save(self) -> None:
@@ -28,7 +30,7 @@ class Session:
     @staticmethod
     def load(session_id: str) -> Session:
         path = os.path.join("./pedalAi/sessions", session_id)
-        session = Session(path)
+        session = Session("./pedalAi/sessions", session_id=session_id)
         files = os.listdir(path)
         for file in files:
             track_path = os.path.join(path, file)
