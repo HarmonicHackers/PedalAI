@@ -36,7 +36,7 @@ class Session:
                 f.write(self.last_modified.contents)
 
         if len(self.plugins) > 0:
-            with open(os.path.join(self.save_path, "plugins.pkl")) as f:
+            with open(os.path.join(self.save_path, "plugins.pkl"), "wb") as f:
                 pickle.dump(self.plugins, f)
 
     def add_track(self, track: Track) -> None:
@@ -81,7 +81,9 @@ class Session:
                 print("next print")
 
         if os.path.exists(os.path.join(session.save_path, "plugins.pkl")):
-            with open(os.path.join(session.save_path, "plugins.pkl")) as f:
+            with open(
+                os.path.join(session.save_path, "plugins.pkl"), "rb"
+            ) as f:
                 session.plugins = pickle.load(f)
 
         return session
