@@ -98,18 +98,27 @@ function Chat({ reloadAudioFile }: { reloadAudioFile: () => Promise<void> }) {
   );
 }
 
+import { useEffect } from "react";
+
 function App() {
   const [blob, setBlob] = useState<Blob>();
+  const [sessionId, setSessionId] = useState<string>();
+
+  useEffect(() => {
+    async function fetchSessionId() {
+      const res = await fetch("/api");
+      const data = await res.json();
+      setSessionId(data["session_id"]);
+    }
+    fetchSessionId();
+  }, []);
 
   async function uploadFile(file: File) {
-    const res = await fetch("/api/up", {
+    var data = new FormData();
+    data.append("file", file);
+    const res = await fetch(`/api/${sessionId}/upload`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        file,
-      }),
+      body: data,
     });
     if (!res.ok) {
       throw new Error(res.statusText);
@@ -128,6 +137,10 @@ function App() {
 
     const uploadedfile = await resFile.blob();
     setBlob(uploadedfile);
+  }
+
+  if (!sessionId) {
+    return <div>Loading...</div>;
   }
 
   return (
