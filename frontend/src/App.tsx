@@ -273,6 +273,15 @@ function App() {
   }
 
   async function reloadAudioFile() {
+    // if (
+    //   !sessionId ||
+    //   sessionId === "" ||
+    //   sessionId === undefined ||
+    //   sessionId == "undefined"
+    // ) {
+    //   return;
+    // }
+
     const resFile = await fetch(`/api/${sessionId}/download`);
     if (!resFile.ok) {
       throw new Error(resFile.statusText);
