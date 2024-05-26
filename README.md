@@ -8,6 +8,7 @@ Team members:
 - Sriram Vadlamani 
 
 Introducing Pedal, the audio effect assistant made for you!
+![](img/PedalAI.png)
 
 ## Inspiration
 🎸 The inspiration for PedalAI came from **our love for music and technology**! We wanted to create a tool that would allow **beginners** to _seamlessly create_ with the power of artificial intelligence, just like a virtual pedalboard!
