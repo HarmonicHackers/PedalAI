@@ -294,13 +294,14 @@ def get_pedal_effects_from_text(text):
     default_messages = [
         ChatMessage(  # System message (AI assistant introduction)
             role="system",
-            content="You are a helpful music assistant with access to a music track. You must use function calling to apply effects to the latter track!",
+            content="You are a helpful music assistant with access to a music track. You must use function calling to apply effects to the latter track! Make sure to not provide too strong effects and not too much at the same time (max 3,4)",
         ),
         ChatMessage(  # User input
             role="user",
             content=text,
         ),
     ]
+    print("ROOT MESSAGES", default_messages)
 
     # Create the Mistral client and send the default chat messages
     client = MistralClient(api_key=api_key)
@@ -323,7 +324,7 @@ def get_pedal_effects_from_text(text):
             ChatMessage(
                 role="system",
                 # content="Give some expressive opinion in 2 sentences on what the user asked, and what effect the user could ask for. Example: 'Oh nice good idea, try applying this!'",
-                content="Justify what you did according to the user preference and make some recommandations. Example: 'Oh nice good idea, try applying this!. Write only two sentence'",
+                content="Justify what you did according to the user preference. Example: 'Oh nice good idea, try applying this!. Write only two sentence'. If you think the effects you just added are too extreme, you may suggest one or to effects that could enhance the sound better. Make sure to not provide too strong effects and not too much at the same time (max 1,2) ",
             ),
             ChatMessage(role="user", content=text),
             ChatMessage(role="user", content=describing_text),
@@ -344,22 +345,36 @@ def get_pedal_effects_from_text(text):
         response.choices[0].message.tool_calls
     )
 
-    def get_describing_text(effects):
-        describing_text = (
+    def get_tools_explanation(effects):
+        tools_explanation = (
             "I have applied the following effects to the audio track: "
         )
         for effect in effects:
-            describing_text += f"{effect.function.name} "
+            tools_explanation += f"{effect.function.name} "
+        return tools_explanation
+
+    def get_describing_text(effects):
+        describing_text = get_tools_explanation(effects)
+
+        tools_we_wave_name = [
+            audio_effects_jsons[i]["function"]["description"]
+            for i in range(len(audio_effects_jsons))
+        ]
+
+        joining_tools = "\n".join(tools_we_wave_name)
 
         messages = [
             ChatMessage(
                 role="system",
                 # content="Give some expressive opinion in 2 sentences on what the user asked, and what effect the user could ask for. Example: 'Oh nice good idea, try applying this!'",
-                content="Justify what you did according to the user preference and make some recommandations. Example: 'Oh nice good idea, try applying this!. Write only two sentence'",
+                content="Justify what you did according to the user preference and make some recommandations. Example: 'Oh nice good idea, try applying this!. Write only two sentence'"
+                + "Here is every tool we have:\n"
+                + joining_tools,
             ),
             ChatMessage(role="user", content=text),
             ChatMessage(role="user", content=describing_text),
         ]
+        print(messages)
 
         reponse = client.chat(
             model="mistral-small-latest",
@@ -374,5 +389,30 @@ def get_pedal_effects_from_text(text):
         response.choices[0].message.tool_calls
     )
 
+    def get_recommandation(desciption):
+        messages = [
+            ChatMessage(
+                role="system",
+                # content="Give some expressive opinion in 2 sentences on what the user asked, and what effect the user could ask for. Example: 'Oh nice good idea, try applying this!'",
+                content="Use every recommendations and additional effects mentioned, you cannot recommend the effect you are currently applying",
+            ),
+            ChatMessage(role="user", content=desciption),
+        ]
+        print(messages)
+
+        mistral_response = client.chat(
+            model=model,
+            messages=messages,
+            tools=audio_effects_jsons,
+            tool_choice="any",  # Make model sends at least one tool call
+            temperature=0.1,  # Creativity level
+        )
+
+        tool_calls = mistral_response.choices[0].message.tool_calls
+        return tool_calls
+
+    tool_recommendations = get_recommandation(describing_text)
+    print("tool_recommendations", tool_recommendations)
+
     # Return the suggested effects list (list of effect objects to apply to the audio track later on)
-    return describing_text, function_calls
+    return describing_text, function_calls, tool_recommendations

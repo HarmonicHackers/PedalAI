@@ -88,7 +88,9 @@ def dummy_chain(
     text = messages[-1]["content"]
     print(text)
     session = Session.load(session_id)
-    chat_message, function_calls = get_pedal_effects_from_text(text)
+    chat_message, function_calls, tool_recommendations = (
+        get_pedal_effects_from_text(text)
+    )
 
     session.plugins.extend(
         [{"start": start, "end": end, "plugins": function_calls}]
@@ -106,7 +108,7 @@ def dummy_chain(
             is_consecutive=i != 0,
         )
 
-    return {"role": "assistant", "content": chat_message}
+    return {"role": "assistant", "content": chat_message}, tool_recommendations
 
 
 @router.post("/{session_id}/chat/completions")
@@ -118,7 +120,7 @@ async def chat(session_id: str, r: Request):
     percentage_end = data["percentage_end"]
 
     # call to chain.invoke(messages)
-    message = dummy_chain(
+    message, tool_recommendations = dummy_chain(
         messages, session_id, percentage_begin, percentage_end
     )
-    return {"message": message}
+    return {"message": message, "tool_recommendations": tool_recommendations}

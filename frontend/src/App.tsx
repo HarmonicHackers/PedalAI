@@ -19,6 +19,12 @@ const defaultMessages: Message[] = [
 
 import { useRef } from "react";
 
+function cleanString(str: string) {
+  // replace all _ by  space and put the first letter in uppercase
+  const cleanedStr = str.replace(/_/g, " ");
+  return cleanedStr.charAt(0).toUpperCase() + cleanedStr.slice(1);
+}
+
 function Chat({
   reloadAudioFile,
   sessionId,
@@ -31,14 +37,16 @@ function Chat({
   const [messages, setMessages] = useState<Message[]>(defaultMessages);
   const [currentText, setCurrentText] = useState("");
   const [loading, setLoading] = useState(false);
+  const [recommendedTools, setRecommendedTools] = useState<any[]>([]);
   const scrollContainer = useRef<HTMLDivElement>(null);
 
-  async function sendMessage(message: string) {
+  async function sendMessage(message: string, visibleText: string) {
+    setRecommendedTools([]);
     setCurrentText("");
     setLoading(true);
     setMessages((messages) => [
       ...messages,
-      { role: "user", content: message },
+      { role: "user", content: visibleText },
     ]);
     const response = await fetch(`/api/${sessionId}/chat/completions`, {
       method: "POST",
@@ -46,7 +54,7 @@ function Chat({
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        messages: [...messages, { role: "user", content: currentText }],
+        messages: [...messages, { role: "user", content: message }],
         percentage_begin: percentages[0],
         percentage_end: percentages[1],
       }),
@@ -57,9 +65,21 @@ function Chat({
     setLoading(false);
 
     const data = await response.json();
+    console.log(data);
     setMessages((messages) => [...messages, data.message]);
-    scrollContainer.current?.scrollTo(0, scrollContainer.current?.scrollHeight);
+    setRecommendedTools(data.tool_recommendations);
     await reloadAudioFile();
+  }
+
+  useEffect(() => {
+    scrollContainer.current?.scrollTo(0, scrollContainer.current?.scrollHeight);
+  }, [messages]);
+
+  function callfunctiontool(myTool: any) {
+    sendMessage(
+      "USE THE FOLLOWING " + JSON.stringify(myTool.function),
+      "Apply the suggested " + cleanString(myTool.function.name).toLowerCase()
+    );
   }
 
   return (
@@ -97,6 +117,24 @@ function Chat({
           </div>
         )}
       </div>
+      {recommendedTools.length > 0 && (
+        <div className="flex flex-col items-center justify-center h-full">
+          <span>Recommended effects</span>
+          <div className="flex flex-col gap-2">
+            {recommendedTools.map((tool, index) => (
+              <button
+                onClick={() => callfunctiontool(tool)}
+                key={index}
+                className="flex items-center justify-center gap-2"
+              >
+                <div className="p-2 rounded-lg bg-white text-black shadow-sm">
+                  {cleanString(tool.function.name)}
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
       <div className="flex gap-2">
         <input
           type="text"
@@ -104,7 +142,7 @@ function Chat({
           value={currentText}
           onKeyDown={(e) => {
             if (e.key === "Enter") {
-              sendMessage(currentText);
+              sendMessage(currentText, currentText);
             }
           }}
           onChange={(e) => setCurrentText(e.target.value)}
@@ -112,7 +150,7 @@ function Chat({
         <button
           disabled={loading}
           className=" p-2 rounded-lg border-none bg-black text-white shadow-sm"
-          onClick={() => sendMessage(currentText)}
+          onClick={() => sendMessage(currentText, currentText)}
         >
           Send
         </button>
