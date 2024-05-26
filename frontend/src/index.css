@@ -12,8 +12,8 @@
 #range-slider-yellow .range-slider__range {
   display: hidden;
   z-index: 50;
-  background: #ffbf00;
   transition: height 0.3s;
+  @apply bg-green-500;
 }
 
 #range-slider-yellow .range-slider__thumb {

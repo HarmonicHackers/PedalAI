@@ -294,7 +294,7 @@ function App() {
 
   return (
     <div className="flex flex-col h-screen">
-      <div className="flex-1 ">
+      <div className="flex-1 relative bg-black text-white backdrop-blur-2xl">
         {blob ? (
           <Waveform
             audio={blob}

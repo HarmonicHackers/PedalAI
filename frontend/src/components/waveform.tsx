@@ -31,7 +31,7 @@ const Waveform = ({
       barHeight: 1,
       width: containerRef.current!.clientWidth,
       height: containerRef.current!.clientHeight,
-      waveColor: "black",
+      waveColor: "white",
     });
     waveSurfer.loadBlob(audio);
     // waveSurfer.load(audio);
@@ -48,9 +48,9 @@ const Waveform = ({
   // get url from blob
 
   return (
-    <div className="grid grid-cols-[40px_1fr] items-center w-full h-full">
+    <div className="grid grid-cols-[4em_1fr] items-center w-full h-full">
       <button
-        className="p-0.5 flex items-center justify-center bg-white text-black"
+        className=" flex items-center justify-center bg-green-500 rounded-full text-black aspect-square h-[4em] w-[4em]"
         onClick={() => {
           if (!waveSurferRef.current) {
             throw new Error("WaveSurfer is not ready");
