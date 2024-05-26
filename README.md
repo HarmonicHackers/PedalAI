@@ -1,5 +1,12 @@
 # PedalAI
 
+Developed by Team *HarmonicHackers* in the context of MistralAI's Paris Hackathon 2024 in Station F.
+
+Team members:
+- Eliott Flechtner
+- Titouan Verhille
+- Sriram Vadlamani 
+
 Introducing Pedal, the audio effect assistant made for you!
 
 ## Inspiration
