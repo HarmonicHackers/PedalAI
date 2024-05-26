@@ -14,7 +14,7 @@ const defaultMessages: Message[] = [
   {
     role: "assistant",
     content:
-      "Hello hackers 🤟 ! I am Pedal, your music effect assistant! 🎶 \n\nImport a track and let's build together! 🚀",
+      "Hello hackers 🤟 ! I am Pedal, your music effect assistant! 🎶 \r\n\nImport a track and let's build together! 🚀",
   },
 ];
 
@@ -120,13 +120,23 @@ function Chat({
             } my-2`}
           >
             <div
+              style={{
+                // round angle depending on the side
+                borderRadius:
+                  message.role === "user"
+                    ? "8px 8px 0px 8px "
+                    : "8px 8px 8px 0px ",
+              }}
               className={`max-w-[60%] p-2 rounded-lg ${
                 message.role === "user"
-                  ? "bg-green-600 text-white"
+                  ? // ? "bg-gradient-to-l from-green-800 to-green-600 text-white"
+                    "bg-blue-600 text-white"
                   : "bg-white text-black"
               } shadow-sm`}
             >
-              <p>{message.content}</p>
+              {message.content.split("\n").map((line, index) => (
+                <p key={index}>{line}</p>
+              ))}
             </div>
           </div>
         ))}
@@ -134,7 +144,18 @@ function Chat({
           <div className="flex justify-center items-center h-full ">
             <div className="flex items-center justify-center">
               <div className="animate-spin">
-                <div className="h-4 w-4 border-t-2 border-b-2 border-black"></div>
+                <svg
+                  className="scale-150"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="32"
+                  height="32"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    fill="white"
+                    d="M10 21q-1.65 0-2.825-1.175T6 17t1.175-2.825T10 13q.575 0 1.063.138t.937.412V3h6v4h-4v10q0 1.65-1.175 2.825T10 21"
+                  />
+                </svg>
               </div>
             </div>
           </div>
@@ -142,7 +163,7 @@ function Chat({
       </div>
       {recommendedTools.length > 0 && (
         <div className="flex flex-col items-center justify-center h-full">
-          <span>Recommended effects</span>
+          <span className="text-white">Recommended effects</span>
           <div className="flex flex-col gap-2">
             {recommendedTools.map((tool, index) => (
               <button
@@ -158,18 +179,21 @@ function Chat({
           </div>
         </div>
       )}
-      {messages.length > 1 && (
-        <div className="pb-2">
-          <button
-            className=" p-1 rounded-lg border-none bg-black text-white shadow-sm "
-            onClick={() => {
-              rollback();
-            }}
-          >
-            Rollback last added effects
-          </button>
-        </div>
-      )}
+      <div
+        className="pb-2"
+        style={{
+          opacity: messages.length > 1 ? 1 : 0,
+        }}
+      >
+        <button
+          className=" p-1 rounded-lg border-none bg-green-600 text-white shadow-sm "
+          onClick={() => {
+            rollback();
+          }}
+        >
+          Rollback last added effects
+        </button>
+      </div>
       <div className="flex gap-2">
         <input
           type="text"
@@ -318,7 +342,7 @@ function App() {
       </div>
       <div className="relative bg-black">
         <div className="absolute inset-0 flex items-center justify-center h-full w-full">
-          <div className="bg-gradient-to-r bg-green-500 to-green-100 blur-[120px] h-[300px] w-[300px] " />
+          <div className="bg-gradient-to-r bg-green-500 to-green-100 blur-[120px] h-[300px] w-[600px]" />
         </div>
         <div className="relative">
           <button
@@ -329,9 +353,9 @@ function App() {
               }
               downloadFile(blob);
             }}
-            className=" p-2 rounded-lg border-none bg-green-600 text-white shadow-sm"
+            className=" p-2 rounded-lg border-none bg-green-600 text-white shadow-sm m-2"
           >
-            Download
+            Download output
           </button>
         </div>
         <Chat
