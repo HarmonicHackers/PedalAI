@@ -3,6 +3,7 @@ from mistralai.models.chat_completion import ChatMessage
 import os
 import weave
 import functools, json
+from groq import Groq
 from pedalboard import (
     Reverb,
     Gain,
@@ -18,6 +19,7 @@ from pedalboard import (
 model = "mistral-large-latest"
 api_key = os.environ.get("MISTRAL_API_KEY")
 weave.init("Pedal-AI")
+groq_client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
 
 # Check if the API key is set & raise an error if not
 if not api_key:
@@ -330,8 +332,8 @@ def get_pedal_effects_from_text(text):
             ChatMessage(role="user", content=describing_text),
         ]
 
-        reponse = client.chat(
-            model="mistral-small-latest",
+        reponse = groq_client.chat.completions.create(
+            model="mixtral-8x7b-32768",
             messages=messages,
             temperature=0,
         )
@@ -353,7 +355,7 @@ def get_pedal_effects_from_text(text):
             tools_explanation += f"{effect.function.name} "
         return tools_explanation
 
-    def get_describing_text(effects):
+    def get_desc_text(effects):
         describing_text = get_tools_explanation(effects)
 
         tools_we_wave_name = [
@@ -376,8 +378,8 @@ def get_pedal_effects_from_text(text):
         ]
         print(messages)
 
-        reponse = client.chat(
-            model="mistral-small-latest",
+        reponse = groq_client.chat.completions.create(
+            model="mixtral-8x7b-32768",
             messages=messages,
             temperature=0,
         )
@@ -385,9 +387,7 @@ def get_pedal_effects_from_text(text):
 
         return describing_text
 
-    describing_text = get_describing_text(
-        response.choices[0].message.tool_calls
-    )
+    describing_text = get_desc_text(response.choices[0].message.tool_calls)
 
     def get_recommandation(desciption):
         messages = [
