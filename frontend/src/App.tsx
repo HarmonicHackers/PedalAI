@@ -82,6 +82,28 @@ function Chat({
     );
   }
 
+  async function rollback() {
+    setMessages((messages) => [
+      ...messages,
+      {
+        role: "user",
+        content: "Rollback last added effects",
+      },
+      {
+        role: "assistant",
+        content: "Ok I will rollback the last added effects",
+      },
+    ]);
+    setRecommendedTools([]);
+    const res = await fetch(`/api/${sessionId}/rollback`, {
+      method: "POST",
+    });
+    if (!res.ok) {
+      throw new Error(res.statusText);
+    }
+    await reloadAudioFile();
+  }
+
   return (
     <div className="flex flex-col w-full p-2">
       <span className="text-black text-lg font-bold">AI Chat</span>
@@ -99,7 +121,7 @@ function Chat({
             <div
               className={`max-w-[60%] p-2 rounded-lg ${
                 message.role === "user"
-                  ? "bg-[#DCF8C6] text-black"
+                  ? "bg-blue-500 text-white"
                   : "bg-white text-black"
               } shadow-sm`}
             >
@@ -135,9 +157,22 @@ function Chat({
           </div>
         </div>
       )}
+      {messages.length > 1 && (
+        <div className="pb-2">
+          <button
+            className=" p-1 rounded-lg border-none bg-black text-white shadow-sm "
+            onClick={() => {
+              rollback();
+            }}
+          >
+            Rollback last added effects
+          </button>
+        </div>
+      )}
       <div className="flex gap-2">
         <input
           type="text"
+          placeholder="Type anything here to add effects"
           className="p-2 rounded-lg  bg-white text-black shadow-sm border flex-1"
           value={currentText}
           onKeyDown={(e) => {

@@ -315,37 +315,7 @@ def get_pedal_effects_from_text(text):
         temperature=0.1,  # Creativity level
     )
 
-    def get_describing_text(effects):
-        describing_text = (
-            "I have applied the following effects to the audio track: "
-        )
-        for effect in effects:
-            describing_text += f"{effect.function.name} "
-
-        messages = [
-            ChatMessage(
-                role="system",
-                # content="Give some expressive opinion in 2 sentences on what the user asked, and what effect the user could ask for. Example: 'Oh nice good idea, try applying this!'",
-                content="Justify what you did according to the user preference. Example: 'Oh nice good idea, try applying this!. Write only two sentence'. If you think the effects you just added are too extreme, you may suggest one or to effects that could enhance the sound better. Make sure to not provide too strong effects and not too much at the same time (max 1,2) ",
-            ),
-            ChatMessage(role="user", content=text),
-            ChatMessage(role="user", content=describing_text),
-        ]
-
-        reponse = groq_client.chat.completions.create(
-            model="mixtral-8x7b-32768",
-            messages=messages,
-            temperature=0,
-        )
-        describing_text = reponse.choices[0].message.content
-
-        return describing_text
-
     function_calls = response.choices[0].message.tool_calls
-
-    describing_text = get_describing_text(
-        response.choices[0].message.tool_calls
-    )
 
     def get_tools_explanation(effects):
         tools_explanation = (
@@ -387,7 +357,7 @@ def get_pedal_effects_from_text(text):
 
         return describing_text
 
-    describing_text = get_desc_text(response.choices[0].message.tool_calls)
+    describing_text = get_desc_text(function_calls)
 
     def get_recommandation(desciption):
         messages = [
