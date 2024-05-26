@@ -8,4 +8,5 @@ router = APIRouter()
 async def rollback(session_id: str):
     session = Session.load(session_id)
     session.rollback()
+    session.save()
     return {"plugins": len(session.plugins)}
