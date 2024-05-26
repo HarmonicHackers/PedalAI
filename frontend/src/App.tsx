@@ -13,7 +13,8 @@ type Message = {
 const defaultMessages: Message[] = [
   {
     role: "assistant",
-    content: "Hello I am pedalAI assistant",
+    content:
+      "Hello hackers 🤟 ! I am Pedal, your music effect assistant! 🎶 \n\nImport a track and let's build together! 🚀",
   },
 ];
 
@@ -105,7 +106,7 @@ function Chat({
   }
 
   return (
-    <div className="flex flex-col w-full p-2">
+    <div className="flex flex-col w-full p-2 relative">
       <span className="text-black text-lg font-bold">AI Chat</span>
       <div
         ref={scrollContainer}
@@ -121,11 +122,11 @@ function Chat({
             <div
               className={`max-w-[60%] p-2 rounded-lg ${
                 message.role === "user"
-                  ? "bg-blue-500 text-white"
+                  ? "bg-green-600 text-white"
                   : "bg-white text-black"
               } shadow-sm`}
             >
-              {message.content}
+              <p>{message.content}</p>
             </div>
           </div>
         ))}
@@ -172,7 +173,7 @@ function Chat({
       <div className="flex gap-2">
         <input
           type="text"
-          placeholder="Type anything here to add effects"
+          placeholder="Ask me anything regarding music effects ! ✨"
           className="p-2 rounded-lg  bg-white text-black shadow-sm border flex-1"
           value={currentText}
           onKeyDown={(e) => {
@@ -184,7 +185,7 @@ function Chat({
         />
         <button
           disabled={loading}
-          className=" p-2 rounded-lg border-none bg-black text-white shadow-sm"
+          className=" p-2 rounded-lg border-none bg-green-600 text-white shadow-sm"
           onClick={() => sendMessage(currentText, currentText)}
         >
           Send
@@ -197,6 +198,7 @@ function Chat({
 import { useEffect } from "react";
 
 import { Donut, Silver, HighContrast, White } from "react-dial-knob";
+import Home from "./components/home";
 
 function App() {
   const [blob, setBlob] = useState<Blob>();
@@ -260,21 +262,27 @@ function App() {
   >([0, 100]);
   if (!sessionId) {
     return (
-      <div className="flex flex-col items-center gap-2 justify-center h-screen">
-        <button
-          className=" p-2 rounded-lg border-none bg-black text-white shadow-sm"
-          onClick={startNewSession}
-        >
-          Start New Session
-        </button>
-        <button
-          className=" p-2 rounded-lg border-none bg-black text-white shadow-sm"
-          onClick={restoreLastSession}
-        >
-          Restore Last Session
-        </button>
-      </div>
+      <Home
+        startSession={startNewSession}
+        restoreSession={restoreLastSession}
+      />
     );
+    // return (
+    //   <div className="flex flex-col items-center gap-2 justify-center h-screen">
+    //     <button
+    //       className=" p-2 rounded-lg border-none bg-black text-white shadow-sm"
+    //       onClick={startNewSession}
+    //     >
+    //       Start New Session
+    //     </button>
+    //     <button
+    //       className=" p-2 rounded-lg border-none bg-black text-white shadow-sm"
+    //       onClick={restoreLastSession}
+    //     >
+    //       Restore Last Session
+    //     </button>
+    //   </div>
+    // );
   }
 
   function downloadFile(file: Blob) {
@@ -308,8 +316,11 @@ function App() {
           </div>
         )}
       </div>
-      <div className="bg-zinc-100">
-        <div>
+      <div className="relative bg-black">
+        <div className="absolute inset-0 flex items-center justify-center h-full w-full">
+          <div className="bg-gradient-to-r bg-green-500 to-green-100 blur-[120px] h-[300px] w-[300px] " />
+        </div>
+        <div className="relative">
           <button
             disabled={!blob}
             onClick={() => {
@@ -318,7 +329,7 @@ function App() {
               }
               downloadFile(blob);
             }}
-            className=" p-2 rounded-lg border-none bg-black text-white shadow-sm"
+            className=" p-2 rounded-lg border-none bg-green-600 text-white shadow-sm"
           >
             Download
           </button>
