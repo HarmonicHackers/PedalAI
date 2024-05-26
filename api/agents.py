@@ -1,7 +1,8 @@
 from mistralai.client import MistralClient
 from mistralai.models.chat_completion import ChatMessage
 import os
-import weave
+
+# import weave
 import functools, json
 from groq import Groq
 from pedalboard import (
@@ -18,7 +19,7 @@ from pedalboard import (
 # Model & API key environment variable
 model = "mistral-large-latest"
 api_key = os.environ.get("MISTRAL_API_KEY")
-weave.init("Pedal-AI")
+# weave.init("Pedal-AI")
 groq_client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
 
 # Check if the API key is set & raise an error if not
